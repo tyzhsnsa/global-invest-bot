@@ -15,16 +15,7 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
     
-    - name: Ensure repository is up to date
-      run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git fetch origin main
-        git reset --hard origin/main
-        
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
@@ -54,6 +45,8 @@ jobs:
     
     - name: Commit and push draft
       run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
         git add _drafts/
         git commit -m "Add daily draft $(date +%Y-%m-%d)" || exit 0
         git push
