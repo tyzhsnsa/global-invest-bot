@@ -9,7 +9,7 @@ class ArticleSelector:
         if not api_key:
             print("Warning: GEMINI_API_KEY environment variable is not set")
         genai.configure(api_key=api_key)
-        self.model = genai.GenerativeModel('gemini-2.5-flash')
+        self.model = genai.GenerativeModel('gemini-3.1-flash-lite-preview')
     
     def select_best_article(self, articles):
         """日本の個人投資家に最も価値のある記事を選定"""
