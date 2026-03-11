@@ -7,7 +7,7 @@ class ArticleTranslator:
     def __init__(self):
         api_key = os.environ.get('GEMINI_API_KEY')
         genai.configure(api_key=api_key)
-        self.model = genai.GenerativeModel('gemini-2.0-flash-exp')
+        self.model = genai.GenerativeModel('gemini-2.5-flash')
     
     def translate_and_summarize(self, article):
         """記事を翻訳し、note用フォーマットに整形"""
