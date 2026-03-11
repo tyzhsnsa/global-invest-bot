@@ -15,7 +15,16 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
     
+    - name: Ensure repository is up to date
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git fetch origin main
+        git reset --hard origin/main
+        
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
@@ -45,20 +54,6 @@ jobs:
     
     - name: Commit and push draft
       run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        
-        # 完全にローカルの変更を退避
-        mkdir -p /tmp/drafts_backup
-        cp -r _drafts/* /tmp/drafts_backup/ 2>/dev/null || true
-        
-        # ワークスペースをリモートと完全に一致させる
-        git fetch origin main
-        git reset --hard origin/main
-        
-        # 退避したファイルを戻す（今回生成した新しい下書き）
-        cp -r /tmp/drafts_backup/* _drafts/ 2>/dev/null || true
-        
         git add _drafts/
         git commit -m "Add daily draft $(date +%Y-%m-%d)" || exit 0
         git push
