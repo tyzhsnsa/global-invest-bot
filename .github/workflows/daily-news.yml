@@ -47,9 +47,17 @@ jobs:
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        git stash push -u _drafts/
+        
+        # コンフリクトを防ぐため、先ほど生成したローカルファイルを一時退避
+        mkdir -p /tmp/drafts_backup
+        cp -r _drafts/* /tmp/drafts_backup/ 2>/dev/null || true
+        rm -rf _drafts/*.json _drafts/*.md
+        
         git pull --rebase origin main
-        git stash pop || true
+        
+        # 退避したファイルを戻す
+        cp -r /tmp/drafts_backup/* _drafts/ 2>/dev/null || true
+        
         git add _drafts/
         git commit -m "Add daily draft $(date +%Y-%m-%d)" || exit 0
         git push
