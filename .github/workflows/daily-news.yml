@@ -48,14 +48,15 @@ jobs:
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         
-        # コンフリクトを防ぐため、先ほど生成したローカルファイルを一時退避
+        # 完全にローカルの変更を退避
         mkdir -p /tmp/drafts_backup
         cp -r _drafts/* /tmp/drafts_backup/ 2>/dev/null || true
-        rm -rf _drafts/*.json _drafts/*.md
         
-        git pull --rebase origin main
+        # ワークスペースをリモートと完全に一致させる
+        git fetch origin main
+        git reset --hard origin/main
         
-        # 退避したファイルを戻す
+        # 退避したファイルを戻す（今回生成した新しい下書き）
         cp -r /tmp/drafts_backup/* _drafts/ 2>/dev/null || true
         
         git add _drafts/
