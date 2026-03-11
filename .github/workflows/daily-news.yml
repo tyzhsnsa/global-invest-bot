@@ -49,4 +49,5 @@ jobs:
         git config --local user.name "GitHub Action"
         git add _drafts/
         git commit -m "Add daily draft $(date +%Y-%m-%d)" || exit 0
+        git pull --rebase origin main
         git push
