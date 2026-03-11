@@ -40,11 +40,19 @@ class ArticleTranslator:
 """
         
         try:
-            response = self.model.generate_content(prompt)
+            safety_settings = [
+                {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
+                {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE"},
+                {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE"},
+                {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
+            ]
+            response = self.model.generate_content(prompt, safety_settings=safety_settings)
             return response.text
         except Exception as e:
             print(f"Translation API error: {e}")
-            return "【タイトル】エラーにより取得できませんでした"
+            if 'response' in locals() and hasattr(response, 'prompt_feedback'):
+                print(f"Prompt Feedback (Blocked?): {response.prompt_feedback}")
+            return "【タイトル】エラーにより取得できませんでした\n\nAPI制限またはセーフティフィルターによりブロックされました。ログを確認してください。"
     
     def create_note_draft(self, translated_content, article):
         """note用の完全な下書きを作成"""

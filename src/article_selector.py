@@ -43,12 +43,28 @@ class ArticleSelector:
 """
         
         try:
-            response = self.model.generate_content(prompt)
+            # セーフティ設定を緩和（投資ニュースでブロックされないようにする）
+            safety_settings = [
+                {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
+                {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE"},
+                {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE"},
+                {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
+            ]
+            response = self.model.generate_content(prompt, safety_settings=safety_settings)
+            
+            # rate limit対策の待機時間
+            import time
+            time.sleep(2)
+            
             selected_num = int(response.text.strip()) - 1
             if selected_num < 0 or selected_num >= len(articles):
                 selected_num = 0
         except Exception as e:
             print(f"Failed to parse AI response or hit API error: {e}")
+            if hasattr(e, 'response') and hasattr(e.response, 'text'):
+                print(f"API Error Details: {e.response.text}")
+            elif hasattr(response, 'prompt_feedback'):
+                print(f"Prompt Feedback: {response.prompt_feedback}")
             selected_num = 0
         
         return articles[selected_num]
