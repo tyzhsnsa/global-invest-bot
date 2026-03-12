@@ -49,6 +49,8 @@ jobs:
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
+        git config pull.rebase false
+        
         git add _drafts/
         # 変更がなければ正常終了、あればコミットしてプッシュ
         if git diff-index --quiet HEAD; then
@@ -56,5 +58,6 @@ jobs:
           exit 0
         else
           git commit -m "Add daily draft $(date +%Y-%m-%d)"
+          git pull origin main
           git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }} HEAD:main
         fi
